@@ -64,7 +64,6 @@ void update_projectiles() {
     double xProjectile = canon_ball->position.x;
     double yProjectile = canon_ball->position.y;
     double distance = sqrt(pow(earth.position.x - canon_ball->position.x, 2) + pow(earth.position.y - canon_ball->position.y, 2));
-    if (distance < 0.1) distance = 0.1;
     double gravitational_force = GRAVITATIONAL_CONSTANT * earth.mass * canon_ball->mass / pow(distance, 2);
     force.x = gravitational_force * ((earth.position.x - canon_ball->position.x) / distance); // Fx = F * sin (|Fx|)
     force.y = gravitational_force * ((earth.position.y - canon_ball->position.y) / distance); // Fy = F * cos (|Fy|)
@@ -75,9 +74,14 @@ void update_projectiles() {
     canon_ball->position.x += canon_ball->speed.x;
     canon_ball->position.y += canon_ball->speed.y;
     distance = sqrt(pow(earth.position.x - canon_ball->position.x, 2) + pow(earth.position.y - canon_ball->position.y, 2));
-    if (distance < earth.radius + canon_ball->radius) {
-      canon_ball->position.x = xProjectile;
-      canon_ball->position.y = yProjectile;
+    if (distance <= earth.radius + canon_ball->radius) {
+      canon_ball->speed.x *= -0.1;
+      canon_ball->speed.y *= -0.1;
+      while (distance <= earth.radius + canon_ball->radius) {
+        canon_ball->position.x += canon_ball->speed.x;
+        canon_ball->position.y += canon_ball->speed.y;
+        distance = (double)sqrt(pow(earth.position.x - canon_ball->position.x, 2) + pow(earth.position.y - canon_ball->position.y, 2));
+      }
       canon_ball->speed.x = 0;
       canon_ball->speed.y = 0;
       canon_ball->acceleration.x = 0;
