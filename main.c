@@ -109,11 +109,7 @@ int main() {
   while (event.type != ALLEGRO_EVENT_DISPLAY_CLOSE) {
     al_wait_for_event(config.event_queue, &event);
 
-    if (event.type == ALLEGRO_EVENT_KEY_DOWN) {
-      keys[event.keyboard.keycode] = true;
-    } else if (event.type == ALLEGRO_EVENT_KEY_UP) {
-      keys[event.keyboard.keycode] = false;
-    }
+    register_keyboard_state(&event, keys);
 
     if (keys[ALLEGRO_KEY_ESCAPE]) break;
 

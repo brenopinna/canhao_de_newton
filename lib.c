@@ -23,3 +23,11 @@ void end_allegro(AllegroData *config) {
   al_destroy_event_queue(config->event_queue);
   al_destroy_timer(config->timer);
 }
+
+void register_keyboard_state(ALLEGRO_EVENT *event, bool *keys) {
+  if (event->type == ALLEGRO_EVENT_KEY_DOWN) {
+    keys[event->keyboard.keycode] = true;
+  } else if (event->type == ALLEGRO_EVENT_KEY_UP) {
+    keys[event->keyboard.keycode] = false;
+  }
+}
