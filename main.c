@@ -6,12 +6,18 @@
 #include <global.h>
 #include <lib.h>
 
+// Allegro Global Variables
 AllegroData config;
+ALLEGRO_EVENT event;
+bool keys[ALLEGRO_KEY_MAX] = { 0 };
+
+// Simulation Global Variables
 Body projectiles_array[INT16_MAX] = { 0 };
 int projectiles_count = 0;
 Vector trail_array[INT16_MAX] = { 0 };
 int trail_count = 0;
 Body earth;
+Rectangle canon;
 
 void add_projectile(double x, double y) {
   trail_count = 0;
@@ -39,8 +45,8 @@ void draw_body(Body *body) {
   al_draw_filled_circle(body->position.x, body->position.y, body->radius, body->color);
 }
 
-void draw_canon(Rectangle *canon) {
-  al_draw_filled_rectangle(canon->x1, canon->y1, canon->x2, canon->y2, canon->color);
+void draw_canon() {
+  al_draw_filled_rectangle(canon.x1, canon.y1, canon.x2, canon.y2, canon.color);
 }
 
 void draw_projectiles() {
@@ -84,8 +90,6 @@ void update_projectiles() {
 
 int main() {
   start_allegro(&config);
-  bool keys[ALLEGRO_KEY_MAX] = { 0 };
-  ALLEGRO_EVENT event;
 
   earth = (Body){
     .position = {DISPLAY_WIDTH / 2, DISPLAY_HEIGHT / 2},
@@ -94,11 +98,11 @@ int main() {
     .color = al_map_rgb(10, 50, 200)
   };
 
-  Rectangle canon = {
+  canon = (Rectangle){
     .x1 = earth.position.x - 20,
     .y1 = earth.position.y - earth.radius,
     .x2 = earth.position.x + 20,
-    .y2 = canon.y1 - 40,
+    .y2 = earth.position.y - earth.radius - 40,
     .color = al_map_rgb(200,0,0)
   };
 
