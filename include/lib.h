@@ -2,6 +2,6 @@
 
 #include <global.h>
 
-void start_allegro(LibData *config);
+void start_allegro(AllegroData *config);
 
-void end_allegro(LibData *config);
+void end_allegro(AllegroData *config);

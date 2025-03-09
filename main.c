@@ -6,16 +6,16 @@
 #include <global.h>
 #include <lib.h>
 
-LibData config;
+AllegroData config;
 Body projectiles_array[INT16_MAX] = { 0 };
-int projectiles = 0;
+int projectiles_count = 0;
 Vector trail_array[INT16_MAX] = { 0 };
 int trail_count = 0;
 Body earth;
 
-void add_projectil(double x, double y) {
+void add_projectile(double x, double y) {
   trail_count = 0;
-  Body projectile = projectiles_array[projectiles++] = (Body){
+  Body projectile = projectiles_array[projectiles_count++] = (Body){
     .radius = 10,
     .position = {x, y},
     .mass = 44,
@@ -44,7 +44,7 @@ void draw_canon(Rectangle *canon) {
 }
 
 void draw_projectiles() {
-  for (int i = 0; i < projectiles; i++) {
+  for (int i = 0; i < projectiles_count; i++) {
     Body *canon_ball = &projectiles_array[i];
     draw_body(canon_ball);
   }
@@ -53,13 +53,13 @@ void draw_projectiles() {
 void update_projectiles() {
   Vector force;
 
-  for (int i = 0; i < projectiles; i++) {
+  for (int i = 0; i < projectiles_count; i++) {
     Body *canon_ball = &projectiles_array[i];
     double xProjectile = canon_ball->position.x;
     double yProjectile = canon_ball->position.y;
     double distance = sqrt(pow(earth.position.x - canon_ball->position.x, 2) + pow(earth.position.y - canon_ball->position.y, 2));
     if (distance < 0.1) distance = 0.1;
-    double gravitational_force = G * earth.mass * canon_ball->mass / pow(distance, 2);
+    double gravitational_force = GRAVITATIONAL_CONSTANT * earth.mass * canon_ball->mass / pow(distance, 2);
     force.x = gravitational_force * ((earth.position.x - canon_ball->position.x) / distance); // Fx = F * sin (|Fx|)
     force.y = gravitational_force * ((earth.position.y - canon_ball->position.y) / distance); // Fy = F * cos (|Fy|)
     canon_ball->acceleration.x = force.x / canon_ball->mass;
@@ -79,7 +79,7 @@ void update_projectiles() {
     }
   }
 
-  trail_array[trail_count++] = projectiles_array[projectiles - 1].position;
+  trail_array[trail_count++] = projectiles_array[projectiles_count - 1].position;
 }
 
 int main() {
@@ -104,10 +104,10 @@ int main() {
 
   Vector initial_projectile_position = { (canon.x2 + canon.x1) / 2,canon.y2 - 10 };
 
-  add_projectil(initial_projectile_position.x, initial_projectile_position.y);
+  add_projectile(initial_projectile_position.x, initial_projectile_position.y);
 
   while (event.type != ALLEGRO_EVENT_DISPLAY_CLOSE) {
-    al_wait_for_event(config.queue, &event);
+    al_wait_for_event(config.event_queue, &event);
 
     if (event.type == ALLEGRO_EVENT_KEY_DOWN) {
       keys[event.keyboard.keycode] = true;
@@ -118,9 +118,9 @@ int main() {
     if (keys[ALLEGRO_KEY_ESCAPE]) break;
 
     if (keys[ALLEGRO_KEY_ENTER])
-      add_projectil(initial_projectile_position.x, initial_projectile_position.y);
+      add_projectile(initial_projectile_position.x, initial_projectile_position.y);
 
-    if (event.type == ALLEGRO_EVENT_TIMER && al_event_queue_is_empty(config.queue)) {
+    if (event.type == ALLEGRO_EVENT_TIMER && al_event_queue_is_empty(config.event_queue)) {
       al_clear_to_color(al_map_rgb(15, 0, 20));
       draw_body(&earth);
       draw_canon(&canon);

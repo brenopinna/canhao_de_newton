@@ -4,15 +4,15 @@
 #define DISPLAY_HEIGHT    920
 #define FRAMES_PER_SECOND  30
 
-#define G 0.12
+#define GRAVITATIONAL_CONSTANT 0.12
 #define INITIAL_X_SPEED 20
 #define INITIAL_Y_SPEED -0
 
 typedef struct {
   ALLEGRO_DISPLAY *display;
-  ALLEGRO_EVENT_QUEUE *queue;
+  ALLEGRO_EVENT_QUEUE *event_queue;
   ALLEGRO_TIMER *timer;
-} LibData;
+} AllegroData;
 
 typedef struct {
   double x, y;
