@@ -6,7 +6,6 @@
 #include <global.h>
 #include <lib.h>
 
-// Global Variables
 LibData config;
 Body projectiles_array[INT16_MAX] = { 0 };
 int projectiles = 0;
@@ -56,7 +55,6 @@ void update_projectiles() {
 
   for (int i = 0; i < projectiles; i++) {
     Body *canon_ball = &projectiles_array[i];
-    // prevent_colision(canon_ball, &earth);
     double xProjectile = canon_ball->position.x;
     double yProjectile = canon_ball->position.y;
     double distance = sqrt(pow(earth.position.x - canon_ball->position.x, 2) + pow(earth.position.y - canon_ball->position.y, 2));
@@ -79,10 +77,6 @@ void update_projectiles() {
       canon_ball->acceleration.x = 0;
       canon_ball->acceleration.y = 0;
     }
-    // double x = abs(canon_ball->position.x - earth.position.x);
-    // double y = abs(canon_ball->position.y - earth.position.y);
-    // canon_ball->acceleration.x = (y == 0) ? 0 : sqrt((ACCELERATION * (x / y)) / (1 + x / y)) * (canon_ball->position.x > earth.position.x ? -1 : 1);
-    // canon_ball->acceleration.y = (y == 0) ? 0 : sqrt(ACCELERATION / (1 + x / y)) * (canon_ball->position.y > earth.position.y ? -1 : 1);
   }
 
   trail_array[trail_count++] = projectiles_array[projectiles - 1].position;
@@ -115,7 +109,6 @@ int main() {
   while (event.type != ALLEGRO_EVENT_DISPLAY_CLOSE) {
     al_wait_for_event(config.queue, &event);
 
-    // Le as teclas pressionadas
     if (event.type == ALLEGRO_EVENT_KEY_DOWN) {
       keys[event.keyboard.keycode] = true;
     } else if (event.type == ALLEGRO_EVENT_KEY_UP) {
@@ -127,19 +120,15 @@ int main() {
     if (keys[ALLEGRO_KEY_ENTER])
       add_projectil(initial_projectile_position.x, initial_projectile_position.y);
 
-    // Executado em sincronia com o timer
     if (event.type == ALLEGRO_EVENT_TIMER && al_event_queue_is_empty(config.queue)) {
-      al_clear_to_color(al_map_rgb(15, 0, 20)); // fundo da simulacao
-      // Atualiza os projeteis
+      al_clear_to_color(al_map_rgb(15, 0, 20));
       draw_body(&earth);
       draw_canon(&canon);
       update_projectiles();
       draw_trail();
       draw_projectiles();
-      // Atualiza o displau
       al_flip_display();
     }
-
   }
 
   end_allegro(&config);

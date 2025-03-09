@@ -4,7 +4,7 @@
 #define DISPLAY_HEIGHT    920
 #define FRAMES_PER_SECOND  30
 
-#define G 0.12 // Cte Gravitacional
+#define G 0.12
 #define INITIAL_X_SPEED 20
 #define INITIAL_Y_SPEED -0
 
