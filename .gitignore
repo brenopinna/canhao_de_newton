@@ -1,3 +1,5 @@
 *.o
 main
 main.exe
+allegro32
+allegro64
