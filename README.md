@@ -19,7 +19,7 @@
   # ALLEGRO = allegro32 (or allegro64)
   ...
   ```
-- Run `make`
+- Run `make && ./main`
 
 ---
 
@@ -42,4 +42,4 @@
     ALLEGRO = allegro32 (or allegro64)
     ...
   ```
-- Run `make`
+- Run `make && ./main`
