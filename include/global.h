@@ -4,9 +4,9 @@
 #define DISPLAY_HEIGHT    920
 #define FRAMES_PER_SECOND  30
 
-#define GRAVITATIONAL_CONSTANT (6.67430*pow(10, -20)) // (Cte original): G = 6.67430 * 10 ^ -11
+#define GRAVITATIONAL_CONSTANT 6.67430e-20 // (Cte original): G = 6.67430e-11
 #define INITIAL_X_SPEED 20
-#define INITIAL_Y_SPEED -0
+#define INITIAL_Y_SPEED 0
 
 typedef struct {
   ALLEGRO_DISPLAY *display;

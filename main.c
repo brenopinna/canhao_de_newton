@@ -26,7 +26,7 @@ void add_projectile(double x, double y) {
   Body projectile = projectiles_array[projectiles_count++] = (Body){
     .radius = 10,
     .position = {x, y},
-    .mass = 7.348 * pow(10, 22),
+    .mass = 7.348e22,
     .color = al_map_rgb(100, 100, 100),
     .speed = initial_projectile_speed,
     .acceleration = {0,0}
@@ -62,27 +62,34 @@ void draw_projectiles() {
 
 void update_projectiles() {
   Vector force;
+  const double start_gravitational_force_equation = GRAVITATIONAL_CONSTANT * earth.mass;
 
   for (uint16_t i = 0; i < projectiles_count; i++) {
     Body *canon_ball = &projectiles_array[i];
-    double distance = sqrt(pow(earth.position.x - canon_ball->position.x, 2) + pow(earth.position.y - canon_ball->position.y, 2));
-    double gravitational_force = GRAVITATIONAL_CONSTANT * earth.mass * canon_ball->mass / pow(distance, 2);
-    force.x = gravitational_force * ((earth.position.x - canon_ball->position.x) / distance); // Fx = F * sin (|Fx|)
-    force.y = gravitational_force * ((earth.position.y - canon_ball->position.y) / distance); // Fy = F * cos (|Fy|)
+    Vector distance_vector = { earth.position.x - canon_ball->position.x, earth.position.y - canon_ball->position.y };
+    double distance = sqrt(distance_vector.x * distance_vector.x + distance_vector.y * distance_vector.y);
+    double gravitational_force = start_gravitational_force_equation * canon_ball->mass / (distance * distance);
+    force.x = gravitational_force * ((distance_vector.x) / distance); // Fx = F * sin (|Fx|)
+    force.y = gravitational_force * ((distance_vector.y) / distance); // Fy = F * cos (|Fy|)
     canon_ball->acceleration.x = force.x / canon_ball->mass;
     canon_ball->acceleration.y = force.y / canon_ball->mass;
     canon_ball->speed.x += canon_ball->acceleration.x;
     canon_ball->speed.y += canon_ball->acceleration.y;
     canon_ball->position.x += canon_ball->speed.x;
     canon_ball->position.y += canon_ball->speed.y;
-    distance = sqrt(pow(earth.position.x - canon_ball->position.x, 2) + pow(earth.position.y - canon_ball->position.y, 2));
-    if (distance <= earth.radius + canon_ball->radius) {
+    // atualizar o vetor das distancias
+    distance_vector = (Vector){ earth.position.x - canon_ball->position.x, earth.position.y - canon_ball->position.y };
+    double squared_distance = distance_vector.x * distance_vector.x + distance_vector.y * distance_vector.y;
+    double squared_radius_sum = (earth.radius + canon_ball->radius) * (earth.radius + canon_ball->radius);
+    if (squared_distance <= squared_radius_sum) {
       canon_ball->speed.x *= -0.1;
       canon_ball->speed.y *= -0.1;
-      while (distance <= earth.radius + canon_ball->radius) {
+      while (squared_distance <= squared_radius_sum) {
         canon_ball->position.x += canon_ball->speed.x;
         canon_ball->position.y += canon_ball->speed.y;
-        distance = (double)sqrt(pow(earth.position.x - canon_ball->position.x, 2) + pow(earth.position.y - canon_ball->position.y, 2));
+        // atualiza o vetor distancia e o quadrado das distancias
+        distance_vector = (Vector){ earth.position.x - canon_ball->position.x, earth.position.y - canon_ball->position.y };
+        squared_distance = distance_vector.x * distance_vector.x + distance_vector.y * distance_vector.y;
       }
       canon_ball->speed.x = 0;
       canon_ball->speed.y = 0;
@@ -153,7 +160,7 @@ int main() {
   earth = (Body){
     .position = {DISPLAY_WIDTH / 2, DISPLAY_HEIGHT / 2},
     .radius = 250,
-    .mass = 5.972 * pow(10, 24),
+    .mass = 5.972e24,
     .color = al_map_rgb(10, 50, 200)
   };
 
