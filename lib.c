@@ -10,6 +10,7 @@ void start_allegro(AllegroData *config) {
   al_init_font_addon();
 
   config->display = al_create_display(DISPLAY_WIDTH, DISPLAY_HEIGHT);
+  config->trail_buffer = al_create_bitmap(DISPLAY_WIDTH, DISPLAY_HEIGHT);
   config->event_queue = al_create_event_queue();
   config->timer = al_create_timer(1.0 / FRAMES_PER_SECOND);
   config->font = al_create_builtin_font();
@@ -23,6 +24,7 @@ void start_allegro(AllegroData *config) {
 
 void end_allegro(AllegroData *config) {
   al_destroy_display(config->display);
+  al_destroy_bitmap(config->trail_buffer);
   al_destroy_event_queue(config->event_queue);
   al_destroy_timer(config->timer);
   al_destroy_font(config->font);

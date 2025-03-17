@@ -15,15 +15,20 @@ bool keys[ALLEGRO_KEY_MAX] = { 0 };
 // Simulation Global Variables
 Body projectiles_array[UINT16_MAX] = { 0 };
 uint16_t projectiles_count = 0;
-Vector trail_array[UINT16_MAX] = { 0 };
-uint16_t trail_count = 0;
 Body earth;
 Rectangle canon;
 Vector initial_projectile_speed = { INITIAL_X_SPEED, INITIAL_Y_SPEED };
 
+void reset_trail_buffer() {
+  al_set_target_bitmap(config.trail_buffer);
+
+  al_clear_to_color(al_map_rgba(0, 0, 0, 0));
+
+  al_set_target_backbuffer(config.display);
+}
+
 void add_projectile(double x, double y) {
-  trail_count = 0;
-  Body projectile = projectiles_array[projectiles_count++] = (Body){
+  projectiles_array[projectiles_count++] = (Body){
     .radius = 10,
     .position = {x, y},
     .mass = 7.348e22,
@@ -31,16 +36,11 @@ void add_projectile(double x, double y) {
     .speed = initial_projectile_speed,
     .acceleration = {0,0}
   };
-  trail_array[trail_count++] = projectile.position;
+  reset_trail_buffer();
 }
 
 void draw_trail() {
-  Vector before = trail_array[0];
-  for (uint16_t i = 0; i < trail_count; i++) {
-    Vector after = trail_array[i];
-    al_draw_line(before.x, before.y, after.x, after.y, al_map_rgb(255, 0, 0), 1);
-    before = after;
-  }
+  al_draw_bitmap(config.trail_buffer, 0, 0, 0);
 }
 
 void draw_body(Body *body) {
@@ -56,16 +56,21 @@ void draw_projectiles() {
     Body *canon_ball = &projectiles_array[i];
     draw_body(canon_ball);
   }
-  Body last_projectile = projectiles_array[projectiles_count - 1];
-  al_draw_circle(last_projectile.position.x, last_projectile.position.y, last_projectile.radius + 1, al_map_rgb(255, 0, 0), 2);
+  if (projectiles_count) {
+    Body last_projectile = projectiles_array[projectiles_count - 1];
+    al_draw_circle(last_projectile.position.x, last_projectile.position.y, last_projectile.radius + 1, al_map_rgb(255, 0, 0), 2);
+  }
 }
 
 void update_projectiles() {
   Vector force;
   const double start_gravitational_force_equation = GRAVITATIONAL_CONSTANT * earth.mass;
 
+  Vector before, after;
+
   for (uint16_t i = 0; i < projectiles_count; i++) {
     Body *canon_ball = &projectiles_array[i];
+    before = canon_ball->position;
     Vector distance_vector = { earth.position.x - canon_ball->position.x, earth.position.y - canon_ball->position.y };
     double distance = sqrt(distance_vector.x * distance_vector.x + distance_vector.y * distance_vector.y);
     double gravitational_force = start_gravitational_force_equation * canon_ball->mass / (distance * distance);
@@ -96,15 +101,23 @@ void update_projectiles() {
       canon_ball->acceleration.x = 0;
       canon_ball->acceleration.y = 0;
     }
+    after = canon_ball->position;
   }
 
-  if (trail_count == UINT16_MAX) trail_count = 0;
-  trail_array[trail_count++] = projectiles_array[projectiles_count - 1].position;
+  if (projectiles_count) {
+    al_set_target_bitmap(config.trail_buffer);
+
+    al_draw_line(before.x, before.y, after.x, after.y, al_map_rgb(255, 0, 0), 2);
+
+    al_set_target_backbuffer(config.display);
+  }
 }
 
 void reset_simulation() {
   projectiles_count = 0;
-  trail_count = 0;
+
+  reset_trail_buffer();
+
   initial_projectile_speed = (Vector){ INITIAL_X_SPEED, INITIAL_Y_SPEED };
 }
 

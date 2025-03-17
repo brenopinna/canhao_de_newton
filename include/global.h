@@ -10,6 +10,7 @@
 
 typedef struct {
   ALLEGRO_DISPLAY *display;
+  ALLEGRO_BITMAP *trail_buffer;
   ALLEGRO_EVENT_QUEUE *event_queue;
   ALLEGRO_TIMER *timer;
   ALLEGRO_FONT *font;
